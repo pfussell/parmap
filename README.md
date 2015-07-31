@@ -1,9 +1,13 @@
-parmap
+PARMAP
 ======
 
-Nmap xml file parsing and reporting script
+Yet another Nmap xml file parsing and reporting script in ruby. 
+Using the wonderful ruby-nmap gem this script gives you a few options for displaying and outputting the information from an nmap XML file. 
 
+Requirements
+------------
 
+> gem install ruby-nmap
 
 Features
 
