@@ -10,6 +10,7 @@ Requirements
 > gem install ruby-nmap
 
 Features
+-------
 
 Easy viewing of open ports and services in the terminal
 Create CSV to be used in reporting documents
