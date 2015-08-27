@@ -1,8 +1,6 @@
+#!/usr/bin/env ruby
 
-# !/usr/bin/env ruby
 require 'nmap/xml'
-require 'colorize'
-require 'nmap/program'
 require 'thor'
 
 # Takes an nmap xml file as an argument
@@ -25,6 +23,10 @@ class Parsing < Nmap::XML
         @host_hash[host] = ports_arry
       end
     end
+  end
+
+  def show_livehosts
+    @host_hash.each_key { |key| puts key }
   end
 
   def pretty_print
@@ -57,32 +59,64 @@ class Parsing < Nmap::XML
       end
     end
   end
+
+  def parse_nse
+    @xmlfi.each_host do |host|
+      puts "[#{host.ip}]"
+
+      host.scripts.each do |name,output|
+        output.each_line { |line| puts "  #{line}" }
+      end
+
+      host.each_port do |port|
+        puts "  [#{port.number}/#{port.protocol}]"
+
+        port.scripts.each do |name,output|
+          puts "    [#{name}]"
+
+          output.each_line { |line| puts "      #{line}" }
+        end
+      end
+    end
+  end
+
+
 end
+
 
 # Use thor to manage the command line options
 class Parmap < Thor
-  option :file, :required => true
+# option :file, :required => true
   desc 'parse FILE', 'parse the FILE and output the results to the screen'
   def parse_xml(file)
     parser = Parsing.new(file)
     parser.pretty_print
   end
 
-  option :file, :required => true
-  option :port
-  desc 'ports FILE PORT', 'given a port number create a file with a list of hosts that have that port open'
-  def ports(prt)
+  desc 'ports FILE PORT', 'create a file with a list of hosts where the port was open'
+  def ports(file, prt)
     parser = Parsing.new(file)
     write_out(prt)
   end
 
-  option :file, :required => true
-  option :outfile, :required => true
-  desc 'csv FILE', 'create a csv of the output from parsing the nmap file'
-  def csv
+  desc 'csv FILE OUTPUT_FILE', 'create a csv of the output from parsing the nmap file'
+  def csv(file, outfile)
     parser = Parsing.new(file)
     report_out(outfile)
   end
+
+  desc 'nse FILE', 'parse the NSE script data from an nmap scan'
+  def nse(file)
+    parser = Parsing.new(file)
+    parser.parse_nse
+  end
+
+  desc 'hosts FILE', 'print a list of Up hosts in the file'
+  def hosts(file)
+    parser = Parsing.new(file)
+    parser.show_livehosts
+  end
+
 end
 
-Parmap.start
+Parmap.start(ARGV)
