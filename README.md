@@ -25,3 +25,9 @@ Commands:
   parmap nse FILE              # parse the NSE script data from an nmap scan
   parmap parse FILE            # parse the FILE and output the results to the screen
   parmap ports FILE PORT       # create a file with a list of hosts where the port was open
+
+TODO
+----
+
+1. Add ability to run commonly used NSE scans against an IP set.
+2. Add ability to run scans against a set of IP's based on a condition.
