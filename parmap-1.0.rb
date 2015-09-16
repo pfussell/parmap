@@ -102,7 +102,7 @@ class Parmap < Thor
   desc 'csv FILE OUTPUT_FILE', 'create a csv of the output from parsing the nmap file'
   def csv(file, outfile)
     parser = Parsing.new(file)
-    report_out(outfile)
+    parser.report_out(outfile)
   end
 
   desc 'nse FILE', 'parse the NSE script data from an nmap scan'
