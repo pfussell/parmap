@@ -43,9 +43,9 @@ class Parsing < Nmap::XML
   def write_out(prt)
     outf = File.open("port_#{prt}.txt", 'a+')
 
-    @host_hash.each_host do |host|
+    @host_hash.each_key do |host|
       host.each_port do |port|
-        outf.write("#{host.ip}") if port.to_s == prt # prt needs to be a string
+        outf.write("#{host.ip}\n") if port.to_s == prt # prt needs to be a string
       end
     end
     outf.close
@@ -87,7 +87,7 @@ end
 # Use thor to manage the command line options
 class Parmap < Thor
 # option :file, :required => true
-  desc 'parse FILE', 'parse the FILE and output the results to the screen'
+  desc 'parse FILE', 'parse the nmap XML file and output the results to the screen'
   def parse_xml(file)
     parser = Parsing.new(file)
     parser.pretty_print
@@ -96,22 +96,22 @@ class Parmap < Thor
   desc 'ports FILE PORT', 'create a file with a list of hosts where the port was open'
   def ports(file, prt)
     parser = Parsing.new(file)
-    write_out(prt)
+    parser.write_out(prt)
   end
 
-  desc 'csv FILE OUTPUT_FILE', 'create a csv of the output from parsing the nmap file'
+  desc 'csv FILE OUTPUT_FILE', 'create a CSV output file from parsing the nmap XML file'
   def csv(file, outfile)
     parser = Parsing.new(file)
     parser.report_out(outfile)
   end
 
-  desc 'nse FILE', 'parse the NSE script data from an nmap scan'
+  desc 'nse FILE', 'parse the NSE script data from an nmap XML file'
   def nse(file)
     parser = Parsing.new(file)
     parser.parse_nse
   end
 
-  desc 'hosts FILE', 'print a list of Up hosts in the file'
+  desc 'hosts FILE', 'print a list of hosts that are Up in the nmap XML file'
   def hosts(file)
     parser = Parsing.new(file)
     parser.show_livehosts
