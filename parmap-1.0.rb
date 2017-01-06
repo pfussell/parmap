@@ -2,6 +2,8 @@
 
 require "nmap/xml"
 require "thor"
+require 'readline'
+
 
 # Takes an nmap xml file as an argument
 # and parses the results to various formats
@@ -42,6 +44,15 @@ class Parsing < Nmap::XML
       end
     end
     puts LINE_SEPERATOR
+  end
+
+  def hostList
+    printf("| %-16s | %-30s | \n", "-"*16, "-"*30)
+    printf("| %-16s | %-30s | \n", " IP ", " HOSTNAME ")
+    printf("| %-16s | %-30s | \n", "-"*16, "-"*30)
+    @host_hash.each_key do |host|
+      printf("| %-16s | %-30s | \n", host.ip, host.hostname)
+    end
   end
 
   def write_out(prt)
@@ -87,46 +98,92 @@ class Parsing < Nmap::XML
 
 end
 
+def interactive
+
+end
 
 # Use thor to manage the command line options
 class Parmap < Thor
-# option :file, :required => true
-  desc "parse FILE", "parse the nmap XML file and output the results to the screen"
+  # option :file, :required => true
+  desc 'parse FILE', 'parse the FILE and output the results to the screen'
   def parse_xml(file)
     parser = Parsing.new(file)
     parser.pretty_print
   end
 
-  desc "ports FILE PORT", "create a file with a list of hosts where the port was open"
+  desc 'ports FILE PORT', 'create a file with a list of hosts where the port was open'
   def ports(file, prt)
     parser = Parsing.new(file)
     parser.write_out(prt)
   end
 
-  desc "csv FILE OUTPUT_FILE", "create a CSV output file from parsing the nmap XML file"
+  desc 'csv FILE OUTPUT_FILE', 'create a csv of the output from parsing the nmap file'
   def csv(file, outfile)
     parser = Parsing.new(file)
     parser.report_out(outfile)
   end
 
-  desc "nse FILE", "parse the NSE script data from an nmap XML file"
+  desc 'nse FILE', 'parse the NSE script data from an nmap scan'
   def nse(file)
     parser = Parsing.new(file)
     parser.parse_nse
   end
 
-  desc "hosts FILE", "print a list of hosts that are Up in the nmap XML file"
+  desc 'hosts FILE', 'print a list of Up hosts in the file'
   def hosts(file)
     parser = Parsing.new(file)
     parser.show_livehosts
   end
 
-  desc "up FILE", "show hosts with a status of up"
-  def up(file)
-    parser = Parsing.new(file)
-    parser.up_hst
+  desc 'shell', 'run an interactive shell for reading nmap scan data'
+  def ishell(file) 
+    while input = Readline.readline("> ", true)
+      break if input == "exit"
+      
+      case input
+      when "hosts"
+        parser = Parsing.new(file)
+        parser.hostList
+      when "ports"
+        parser = Parsing.new(file)
+        parser.pretty_print    
+      end
+      
+      puts Readline::HISTORY.to_a if input == "history"
+
+      # Remove blank lines from history
+      Readline::HISTORY.pop if input == ""
+
+      system(input)
+    end  
   end
 
 end
 
 Parmap.start(ARGV)
+
+def ishell(file)
+  parser = Parser.new(file)
+  
+  while input = Readline.readline("> ", true)
+    break if input == "exit"
+
+    case input
+    when "load"
+      
+    when "hosts"
+      parser = Parsing.new(file)
+      parser.hostList
+    when "ports"
+      parser = Parsing.new(file)
+      parser.pretty_print
+    end
+
+    puts Readline::HISTORY.to_a if input == "history"
+
+    # Remove blank lines from history
+    Readline::HISTORY.pop if input == ""
+
+    system(input)
+  end
+end
