@@ -1,33 +1,14 @@
 PARMAP
 ======
 
-Yet another Nmap xml file parsing and reporting script in ruby.
-Using the wonderful ruby-nmap gem this script gives you a few options for displaying and outputting the information from an nmap XML file.
+Using the wonderful ruby-nmap gem, this script gives you a few options for displaying and outputting the information from an nmap XML file.
+
+Currently in development is version 2. I'm re-writing this from scratch. At the moment this is more like an extension to the ruby-nmap library to make basic parsing tasks more available. The end goal will be a shell that allows interaction with Nmap XML files for parsing and allows the user to run Nmap scripts against subsets of hosts.
+
+The reason behind this is that Nmap has a ton of great scripts to make scanning/testing more effective but finding and running them can be a little arduous. This way you can ask the shell to execute a/several NSE scripts against a set of hosts that have port 80 open. 
 
 Requirements and Installation
 ------------
 
     gem install ruby-nmap
 
-Once you clone the repo or download the file you can just link it to your /usr/local/bin
-
-    ln -s /path/to/download/file.rb /usr/local/bin/
-
-Usage and Features
--------
-
-    parmap COMMAND NMAP_XML_FILE
-
-Commands:
-  parmap csv FILE OUTPUT_FILE  # create a csv of the output from parsing the nmap file
-  parmap help [COMMAND]        # Describe available commands or one specific command
-  parmap hosts FILE            # print a list of Up hosts in the file
-  parmap nse FILE              # parse the NSE script data from an nmap scan
-  parmap parse FILE            # parse the FILE and output the results to the screen
-  parmap ports FILE PORT       # create a file with a list of hosts where the port was open
-
-TODO
-----
-
-1. Add ability to run commonly used NSE scans against an IP set.
-2. Add ability to run scans against a set of IP's based on a condition.
