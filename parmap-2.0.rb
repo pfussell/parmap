@@ -180,7 +180,8 @@ end
 
 ## SHELL
 def nmap_shell
-  # need to add the ability to detect OS to get this path
+  # need to add the ability to detect OS and test if the scipt
+  # path is present 
   list = Dir.entries("/usr/share/nmap/scripts")
   comp = proc { |s| list.grep(/^#{Regexp.escape(s)}/) }
 

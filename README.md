@@ -21,7 +21,7 @@ The command line method does not exsist yet. Need to start that. I think I'd lik
 Need to fix the pretty_service_output method (see issues).
 
 
-###Write Shell
+### Write Shell
 
 The shell will provide 3 main functions. 1) Basic reading a parsing of the an Nmap XML file. Do things like list hosts and output by open ports. 2) Make NSE scanning much easier. Nmap has a ton of useful scripts but many often get overlooked. The shell will allow you to select a group of hosts (based on port?) and execute an NSE script against them. 3) Provide a way to read/interact with scan data in a useful way. For instance, compare live hosts found from 2 different scans. Output a list of hosts that have a particular value in an NSE scan (eg. hosts running Window 7).
 
@@ -41,7 +41,7 @@ example:
 ```
 
 
-###Write Command Line Tool
+### Write Command Line Tool
 
 The intention for the command line tool is to provide all basic parsing functions.
 
