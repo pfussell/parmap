@@ -1,5 +1,6 @@
 require 'nmap/xml'
 require 'readline'
+require 'parmap/shell'
 
 class ParseScan < Nmap::XML
   LINE_SEPERATOR = "|" + "-" * 114 + "|"
@@ -173,34 +174,8 @@ class ParseScan < Nmap::XML
       end
     end
     puts LINE_SEPERATOR
-  end
-  
-  
+  end  
 end
 
-## SHELL
-def nmap_shell
-  # need to add the ability to detect OS and test if the scipt
-  # path is present 
-  list = Dir.entries("/usr/share/nmap/scripts")
-  comp = proc { |s| list.grep(/^#{Regexp.escape(s)}/) }
-
-  Readline.completion_append_character = " "
-  Readline.completion_proc = comp
-  
-  while input = Readline.readline("> ", true)
-    break                       if input == "exit"
-    puts Readline::HISTORY.to_a if input == "hist"
-
-    # Remove blank lines from history
-    Readline::HISTORY.pop if input == ""
-
-    system(input)
-  end
-end
-
-#puts ARGV[0]
-test = ParseScan.new(ARGV[0])
-nmap_shell
 
 
