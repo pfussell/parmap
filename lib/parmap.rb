@@ -46,7 +46,11 @@ class ParseScan < Nmap::XML
   end
 
 
+  # need a method for parsing NSE data
+  
   ## OUTPUT METHODS
+
+  # need a method for printing NSE output
 
   # test scan type and print live hosts accordingly
   # if scan inlcudes a 'noping' rule we will only output
