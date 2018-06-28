@@ -3,8 +3,7 @@
 require 'readline'
 
 data_set = false
-prompt_text = ""
-
+@prompt_text = ""
 # there will be four methods related to the importing
 # of scan data to work with within the shell: create, import, use
 #  set, create, import: set active project for already created project,
@@ -27,8 +26,11 @@ def use
   puts "use file"
 end
 
-def set(xml_file)
-  puts "Setting active xml file"
+def set(args_ary)
+  filename = args_ary[0].to_s
+  puts "Setting active xml file: #{filename}"
+  puts "setting prompt"
+  @prompt_text = "#{filename}"
 end
 
 
@@ -66,6 +68,8 @@ def scan(from_shell)
     import
   when "list"
     list
+  when "set"
+    set(user_input_ary)
   when "exit"
     exit
   else
@@ -78,11 +82,11 @@ end
 #  I'd like to have the shell prompt refelct the xml file or project file
 #  you are working with
 
-prompt = "#{prompt_text}>> "
 
 # going to use readline to handle this part
 # that way we can easily add autocomplete and history
 loop do
+  prompt = "#{@prompt_text}>> "
   print prompt
   scan(gets.chomp)
 end
