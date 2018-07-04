@@ -5,7 +5,7 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '/../lib'))
 require 'parmap'
 
 # run it
-test = Parmap::ParseScan.new('scan.xml')
-test.live_hosts_to_stdout
+#test = Parmap::ParseScan.new('scan.xml')
+#test.live_hosts_to_stdout
 
-Cli.shell
+Parmap.shell

@@ -3,8 +3,10 @@
 require 'readline'
 
 module Parmap
-  data_set = false
+  @@data_set = false
   @@prompt_text = ""
+  @@parsed_xml = ""
+  
   # there will be four methods related to the importing
   # of scan data to work with within the shell: create, import, use
   #  set, create, import: set active project for already created project,
@@ -30,8 +32,9 @@ module Parmap
   def self.set(args_ary)
     filename = args_ary[0].to_s
     puts "Setting active xml file: #{filename}"
-    puts "setting prompt"
+    @@parsed_xml = Parmap::ParseScan.new(filename)
     @@prompt_text = "#{filename}"
+    @@data_set = true
   end
 
 
@@ -40,6 +43,7 @@ module Parmap
   # above methods
   def self.list
     puts "list hosts"
+    @@parsed_xml.live_hosts_to_stdout
   end
 
   def self.port
