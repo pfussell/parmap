@@ -2,7 +2,7 @@
 
 require 'readline'
 
-module Cli
+module Parmap
   data_set = false
   @@prompt_text = ""
   # there will be four methods related to the importing
@@ -78,7 +78,12 @@ module Cli
     end
     
   end
-  
+
+  # this is the loop that will handle the user input
+  # going to use readline to handle this part
+  # that way we can easily add autocomplete and history  
+  #  I'd like to have the shell prompt refelct the xml file or project file
+  #  you are working with
   def self.shell
     loop do
       prompt = "#{@@prompt_text}>> "
@@ -88,12 +93,7 @@ module Cli
   end
 
 end
-#  I'd like to have the shell prompt refelct the xml file or project file
-#  you are working with
 
-
-# going to use readline to handle this part
-# that way we can easily add autocomplete and history
 
   
-Cli.shell
+#Cli.shell
