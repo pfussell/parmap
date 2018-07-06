@@ -1,3 +1,5 @@
+require 'nmap/xml' #remove me please
+
 module Parmap
   class ParseScan < Nmap::XML
     LINE_SEPERATOR = "|" + "-" * 114 + "|"
