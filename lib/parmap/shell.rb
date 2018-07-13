@@ -133,7 +133,7 @@ module Parmap
   # that way we can easily add autocomplete and history  
   #  I'd like to have the shell prompt refelct the xml file or project file
   #  you are working with
-  def self.shell
+  def self.ishell
     #loop do
     #  prompt = "#{@@prompt_text}>> "
     #  print prompt

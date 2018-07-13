@@ -1,11 +1,65 @@
 #!/usr/bin/env ruby
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '/../lib'))
-
 require 'parmap'
+require 'thor'
 
-# run it
-#test = Parmap::ParseScan.new('scan.xml')
-#test.live_hosts_to_stdout
 
-Parmap.shell
+module Parmap
+  class ParmapCLI < Thor
+    
+    desc "list NMAP_FILE --type [IP/NAME] --out [OUTPUT FILE]", "print a list of live hosts by IP or NAME."
+    option :type
+    option :out
+    def list(file)
+      parsed = Parmap::ParseScan.new(file)
+      if options[:type] && options[:out] == false
+        if options[:type].downcase == "name"
+          parsed.live_hosts_to_stdout(:name)
+        elsif options[:type].downcase == "ip"
+          parsed.live_hosts_to_stdout
+        else
+          put "Please select a valid option for type (IP or NAME)"
+        end
+      elsif options[:type] && options[:out]
+        if options[:type].downcase == "name"
+          parsed.live_hosts_to_file(:name, options[:out].to_s)
+        elsif options[:type].downcase == "ip"
+          parsed.live_hosts_to_file(:ip, options[:out].to_s)
+        else
+          puts "Please select a valid address type [IP/NAME]"
+        end
+      elsif options[:out]
+        parsed.live_hosts_to_file(:ip, options[:out].to_s)
+      else
+        parsed.live_hosts_to_stdout
+      end        
+    end
+
+    desc "services FILE", "Output a list of found services and their enumerated versions by port"
+    def services(file)
+      parsed = Parmap::ParseScan.new(file)
+      parsed.pretty_service_output
+    end
+
+    desc "qparse FILE", "Create a file for each of a set of common ports containing a list of IPs of hosts found having that port open"
+    def quick_parse(file)
+      parsed = Parmap::ParseScan.new(file)
+      parsed.quick_parse_by_port
+    end
+
+    desc "by_port PORT", "List hosts that have a give PORT open"
+    def by_port(file, port_num)
+      parsed = Parmap::ParseScan.new(file)
+      parsed.output_by_port(:std, port_num.to_i)
+    end
+
+    desc "ishell", "start an interactive shell for parsing data or executing NSE scans"
+    def ishell
+      Parmap.ishell
+    end
+    
+  end
+end
+
+Parmap::ParmapCLI.start(ARGV)

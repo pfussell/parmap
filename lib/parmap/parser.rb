@@ -55,7 +55,7 @@ module Parmap
     # if scan inlcudes a 'noping' rule we will only output
     # hosts with open ports (see 'parse_live_hosts')
     # TODO: out_type to select stdout or File for output
-    def live_hosts_to_stdout(host_type = :ip, out_type = :std)
+    def live_hosts_to_stdout(host_type = :ip)
       if host_type == :ip
         if @xmlfi.scanner["arguments"].include?("-Pn")
           parse_live_hosts.each {|host| puts host.ip}
@@ -85,6 +85,44 @@ module Parmap
       end
     end
 
+    def live_hosts_to_file(host_type = :ip, filename)
+      if host_type == :ip
+        if @xmlfi.scanner["arguments"].include?("-Pn")
+          File.open("#{filename}", 'w') do |f|
+            parse_live_hosts.each { |host| f << "#{host.ip}\n" }
+          end
+        else
+          File.open("#{filename}", 'w') do |f|            
+            parse_up_hosts.each { |host| f << "#{host.ip}\n" }
+          end
+        end
+      # if we want to print by name we need to check
+      # if the host has a name otherwise still do by IP
+      elsif host_type == :name
+        host_ary = []
+        if @xmlfi.scanner["arguments"].include?("-Pn")
+          parse_live_hosts.each do |host|
+            if host.hostname
+              host_ary.push(host.hostname)
+            else
+              host_ary.push(host.ip)
+            end
+          end
+        else
+          parse_up_hosts.each do |host|
+            if host.hostname
+              host_ary.push(host.hostname)
+            else
+              host_ary.push(host.ip)
+            end
+          end
+        end
+        File.open("#{filename}", 'w') do |f|
+          host_ary.each { |host| f.puts("#{host}\n") }
+        end
+      end
+    end
+    
     # print all hosts with given port
     # first arugment has to be :std OR :file depending on what you want to do
     # with the output

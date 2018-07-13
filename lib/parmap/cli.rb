@@ -3,20 +3,26 @@ require 'thor'
 module Parmap
   class ParmapCLI < Thor
     
-    desc "parse FILE", "print table of service scan results to stdout"
-    def parse(file)
-      puts "Hello #{file}"
-    end
-
-    desc "list", "print a list of 'up' hosts from the scan results"
+    desc "list NMAP_FILE --type [IP/NAME]", "print table of service scan results to stdout"
+    option :type
+    #option :out
     def list(file)
-    end
-
-    desc "port PORT", "print a list of hosts with given PORT open"
-    def port(file)
+      parsed = Parmap::ParseScan.new(file)
+      if options[:type]
+        if options[:type].downcase == "name"
+          parsed.live_hosts_to_stdout(:name)
+        elsif options[:type].downcase == "ip"
+          parsed.live_hosts_to_stdout
+        else
+          put "Please select a valid option for type (IP or NAME)"
+        end
+          
+        else
+          parsed.live_hosts_to_stdout
+      end
     end
     
   end
 end
 
-ParmapCLI.start(ARGV)
+#Parmap::ParmapCLI.start(ARGV)
