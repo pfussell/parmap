@@ -46,8 +46,8 @@ scan.xml>>
 
 If you look at the help output below you can tell it doesn't match exactly with the commands. I  will update this as soon as I write a few more functions. I am going to rearrange the help file so that help for each command can be shown with `help COMMAND` format. This is what the help looks like so far: 
 
-$ parmap ishell
 ```
+$ parmap ishell
 >> help
 Data Setup Tasks:
 Before you can scan or parse any data you must either set an active project, create a project
@@ -73,8 +73,9 @@ For help with a specific task append 'help' to the command
 examples: 
 ```
 
-
 ### Command Line Tool Interface
+```
+parmap help
 Commands:
   parmap help [COMMAND]  # Describe available commands or one specific command
   parmap ishell          # start an interactive shell for parsing data or executing NSE scans
@@ -82,7 +83,7 @@ Commands:
   parmap port PORT       # List hosts that have a give PORT open
   parmap qparse FILE     # Create a file for each of a set of common ports containing a list of IPs of hosts found having that port open
   parmap services FILE   # Output a list of found services and their enumerated versions by port
-
+```
 
 ### Libraries
 
