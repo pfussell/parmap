@@ -202,11 +202,11 @@ module Parmap
     # and need to fix the formatting
     # maybe give more printing options in final product (this is org table for now)
     def pretty_service_output
-      @xmlfi.each_host do |host|
+      parse_live_hosts.each do |host|
         puts LINE_SEPERATOR
         host.each do |port|
           unless port.service.product
-            printf("| %-18s | %-6d | %-4s | %-44s \n", host.ip, port.number, port.protocol.upcase, EMPTY)
+            printf("| %-18s | %-6d | %-4s | %-75s | \n", host.ip, port.number, port.protocol.upcase, EMPTY)
           else
             prod = "#{port.service.product.to_s.slice(0..24)} #{port.service.version.to_s.slice(0..24)}"
             printf("| %-18s | %-6d | %-4s | %-28s | %-44s | \n", host.ip, port.number, port.protocol.upcase,

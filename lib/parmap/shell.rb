@@ -6,8 +6,8 @@ module Parmap
   @@data_set = false
   @@prompt_text = ""
   @@parsed_xml = ""
-
-  def print_help
+  
+  def self.print_help
     puts "Data Setup Tasks:"
     puts "Before you can scan or parse any data you must either set an active project, create a project"
     puts "and import data from nmap output (eg. use create import) or set an xml file directly to work with"
@@ -19,12 +19,13 @@ module Parmap
     puts "  cli help [TASK]  # Describe available tasks or one specific task"
     puts ""
     puts "Parsing and Scanning Tasks:"
-    puts "  list out FILE             # list live hosts (this will be based on the scan type); optionally dump results to FILE"
-    puts "  port PORT_NUM out FILE    # print output a list of hosts that have PORT open; optionally dump results to FILE"
-    puts "  services out FILE         # generate a list of hosts and their associated open ports and service versions"
-    puts "  qparse                    # generate a set of files containing host IPs based on a set of common ports"
-    puts "  scan                      # scan TBD"
-    puts "  help                      # print help text"
+    puts "  list FILE             # list live hosts (this will be based on the scan type); optionally dump results to FILE"
+    puts "  port PORT_NUM FILE    # print output a list of hosts that have PORT open; optionally dump results to FILE"
+    puts "  services out FILE     # generate a list of hosts and their associated open ports and service versions"
+    puts "  qparse                # generate a set of files containing host IPs based on a set of common ports"
+    puts "  scan                  # scan TBD"
+    puts "  help                  # print help text"
+    puts ""
     puts "For help with a specific task append 'help' to the command"
     puts ">> set help"
     puts ""
@@ -38,10 +39,13 @@ module Parmap
   #  use: parse data from a single nmap xml file
 
   def self.create(ary_of_args)
-    puts "I will create stuff"
-    puts "and do stuff to"
-    ary_of_args.each do |a|
-      puts a
+    proj_name = ary_of_args[0].shift
+    if Dir.exist?("#{proj_name}")
+      puts "Project name already in place"
+    else
+      puts "Creating a project name at : .#{proj_name}"
+      @@db = FSDB::Database.new(".#{proj_name}")
+      @@prompt_text = "project:#{proj_name}"
     end
   end
 
@@ -76,9 +80,24 @@ module Parmap
   # above methods
   # I can also output by hostname if present so I need to add
   # that option in here
-  def self.list
-    puts "list hosts"
-    @@parsed_xml.live_hosts_to_stdout
+  def self.list(args_ary)
+    puts args_ary[0]
+    if args_ary[0].to_s.downcase == "stdout"
+      @@parsed_xml.live_hosts_to_stdout
+    elsif args_ary[0].to_s.downcase == "help"
+      puts "list will parse live hosts from a scan file. If the scan included a noping flag"
+      puts "this will be hosts that are found to have at least 1 open port. Otherwise it will"
+      puts "just be hosts that report as up from the ping scan."
+      puts ""
+      puts "list has an option FILE argument that will dump the results to a file for you"
+      puts "otherwise it will list hosts on the screen"
+      puts "-----------------------------------------------"
+      puts "list        # write a list of live hosts to the screen"
+      puts "list FILE   # write results to FILE"
+    else
+      @@parsed_xml.live_hosts_to_file(:std, args_ary[0].to_s)
+    end
+
   end
 
   # need to write in check for output file option 
@@ -95,14 +114,12 @@ module Parmap
 
   def self.services
     puts "services"
+    puts "I don't work yet; fixme"
   end
 
-  def self.scan
-    "run a scan"
-  end
-
-  def self.help
-    puts "I am help text"
+  def self.rscan
+    puts "run a scan"
+    puts "I dont' work yet; fixme"
   end
 
   def self.scan(from_shell)
@@ -115,7 +132,11 @@ module Parmap
     when "import"
       import
     when "list"
-      list
+      if @@data_set
+        list(user_input_ary)
+      else
+        puts "Please set an active project or xml file to parse from."
+      end
     when "set"
       set(user_input_ary)
     when "port"
@@ -123,7 +144,7 @@ module Parmap
     when "exit"
       exit
     else
-      help
+      print_help
     end
     
   end

@@ -8,7 +8,15 @@ require 'thor'
 module Parmap
   class ParmapCLI < Thor
     
-    desc "list NMAP_FILE --type [IP/NAME] --out [OUTPUT FILE]", "print a list of live hosts by IP or NAME."
+    desc "list NMAP_FILE", "Output a list of live hosts. `parmap help list` for additional options"
+    long_desc <<-LONGDESC
+    `parmap list` list will list live hosts by IP by default\x5
+    The type parameter can be used to list hosts by hostname or by IP address(default).
+    This will just print the IP address if no hostname is available.\x5
+    \x5
+    usage: 
+    `parmap list --type name --out file.txt`
+    LONGDESC
     option :type
     option :out
     def list(file)
@@ -37,6 +45,7 @@ module Parmap
     end
 
     desc "services FILE", "Output a list of found services and their enumerated versions by port"
+    option :out
     def services(file)
       parsed = Parmap::ParseScan.new(file)
       parsed.pretty_service_output
@@ -48,8 +57,9 @@ module Parmap
       parsed.quick_parse_by_port
     end
 
-    desc "by_port PORT", "List hosts that have a give PORT open"
-    def by_port(file, port_num)
+    desc "port PORT", "List hosts that have a give PORT open"
+    option :out
+    def port(file, port_num)
       parsed = Parmap::ParseScan.new(file)
       parsed.output_by_port(:std, port_num.to_i)
     end

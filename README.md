@@ -11,46 +11,81 @@ Requirements and Installation
 ------------
 
     gem install ruby-nmap
+    gem install fsdb
+    gem install thor
+    gem install readline
 
 Current Goals/TODOs
 --------------
 
 Status:
-The shell frame is in place. Probably need to write a class to better handle state and variables.  
-The command line method does not exsist yet. Need to start that. I think I'd like to use Thor for this.  
-Need to fix the pretty_service_output method (see issues).
 
+### Shell
 
-### Write Shell
+So far the shell has some partial functionality. It can parse data from a supplied nmap xml file via its `set` funtion. My intent is to extend this to be able to create (use the ruby fsdb gem) a project that you can then import data into. This will let the user import nmap results from multiple files and then parse them. In a future version I want to add the data supplied to these files such as timestamps of each import scan to allow diffing of scan results and data like NSE results to allow parsing of files by service version data (eg. search all host with string Windows 7 in smb version scan results). 
 
-The shell will provide 3 main functions. 1) Basic reading a parsing of the an Nmap XML file. Do things like list hosts and output by open ports. 2) Make NSE scanning much easier. Nmap has a ton of useful scripts but many often get overlooked. The shell will allow you to select a group of hosts (based on port?) and execute an NSE script against them. 3) Provide a way to read/interact with scan data in a useful way. For instance, compare live hosts found from 2 different scans. Output a list of hosts that have a particular value in an NSE scan (eg. hosts running Window 7).
-
-I've gone back and forth on how to handle this. I think the best approach for the long term is to base the data the shell will work with on a project file. The user would navigate to a directory where the Nmap files are stored and 'create PROJECT_NAME' as a first step. Then the XML file(s) can be imported. The project file will be a list of hosts by IP with some set of attributes that allow for sorting/comparison etc. 
-
-
-example:
-```
-> create 'project'
-> import 'file.xml'
-> port 445
-> port set 445
-(active:port 445)> scan smb-enum-users
-> set 'file.txt'
-(active:file.txt)> scan script.nse
+At this point you can do a few things like set your active xml file. List live hosts or have them output to a supplied file name. An example run: 
 
 ```
-
-
-### Write Command Line Tool
-
-The intention for the command line tool is to provide all basic parsing functions.
-
+>> set scan.xml
+Setting active xml file: scan.xml
+scan.xml>> list stdout
+stdout
+192.168.0.1
+192.168.0.103
+192.168.0.110
+192.168.0.132
+192.168.0.135
+192.168.0.159
+192.168.0.185
+192.168.0.189
+192.168.0.194
+192.168.0.193
+scan.xml>> 
 ```
-parmap show 'file.xml'                      -- pretty print of ports and serivces
-parmap quick 'file.xml'                     -- create output files for set of common ports (eg. port_445.txt)
-parmap port PORT                            -- print hosts with port open to stdout
-parmap port PORT out 'out.txt'              -- print hosts with port open to 'out.txt'
-parmap up 'file.xml'                        -- print hosts in Up state to stdout (there is some logic for detecting state bulit in) 
-parmap up 'file.xml out 'out.txt'           -- print hosts in Up state to 'out.txt'
-parmap shell                                -- launch shell 
+
+If you look at the help output below you can tell it doesn't match exactly with the commands. I  will update this as soon as I write a few more functions. I am going to rearrange the help file so that help for each command can be shown with `help COMMAND` format. This is what the help looks like so far: 
+
+$ parmap ishell
 ```
+>> help
+Data Setup Tasks:
+Before you can scan or parse any data you must either set an active project, create a project
+and import data from nmap output (eg. use create import) or set an xml file directly to work with
+(eg. set) 
+  create NAME      # create a project with name NAME
+  import FILE      # import data from FILE into active project
+  use PROJ_NAME    # set the current active project to PROJ_NAME
+  set FILE         # set FILE as the active file to work with
+  cli help [TASK]  # Describe available tasks or one specific task
+
+Parsing and Scanning Tasks:
+  list FILE             # list live hosts (this will be based on the scan type); optionally dump results to FILE
+  port PORT_NUM FILE    # print output a list of hosts that have PORT open; optionally dump results to FILE
+  services out FILE     # generate a list of hosts and their associated open ports and service versions
+  qparse                # generate a set of files containing host IPs based on a set of common ports
+  scan                  # scan TBD
+  help                  # print help text
+
+For help with a specific task append 'help' to the command
+>> set help
+
+examples: 
+```
+
+
+### Command Line Tool Interface
+Commands:
+  parmap help [COMMAND]  # Describe available commands or one specific command
+  parmap ishell          # start an interactive shell for parsing data or executing NSE scans
+  parmap list NMAP_FILE  # Output a list of live hosts. `parmap help list` for additional options
+  parmap port PORT       # List hosts that have a give PORT open
+  parmap qparse FILE     # Create a file for each of a set of common ports containing a list of IPs of hosts found having that port open
+  parmap services FILE   # Output a list of found services and their enumerated versions by port
+
+
+### Libraries
+
+The parser needs a function to handle processing NSE scan data. It also needs some cleanup on the services output function. 
+
+The shell needs functions to handle project creation, data import, management etc. 
