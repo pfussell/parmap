@@ -6,7 +6,7 @@ module Parmap
   @@data_set = false
   @@prompt_text = ""
   @@parsed_xml = ""
-  
+
   def self.print_help
     puts "Data Setup Tasks:"
     puts "Before you can scan or parse any data you must either set an active project, create a project"
@@ -31,7 +31,7 @@ module Parmap
     puts ""
     puts "examples: "
   end
-  
+
   # there will be four methods related to the importing
   # of scan data to work with within the shell: create, import, use
   #  set, create, import: set active project for already created project,
@@ -41,16 +41,18 @@ module Parmap
   def self.create(ary_of_args)
     proj_name = ary_of_args[0].shift
     if Dir.exist?("#{proj_name}")
-      puts "Project name already in place"
+      puts "[~] Warning. This project already exsists. Setting as active project."
+      puts "[+] #{Dir.pwd}/.#{proj_name}"
+      @@project = Parmap::Project.new("#{Dir.pwd}/.#{proj_name}")
     else
-      puts "Creating a project name at : .#{proj_name}"
-      @@db = FSDB::Database.new(".#{proj_name}")
-      @@prompt_text = "project:#{proj_name}"
+      puts "[+] Creating project at #{Dir.pwd}/.#{proj_name}"
+      @@project = Parmap::Project.new("#{Dir.pwd}/.#{proj_name}")
     end
   end
 
-  def self.import
-    puts "I will import files into a project"
+  def self.import(xmlfile)
+    puts "[+] Importing #{xmlfile}"
+    @@project.add_file(xmlfile)
   end
 
   def self.use
@@ -100,9 +102,9 @@ module Parmap
 
   end
 
-  # need to write in check for output file option 
+  # need to write in check for output file option
   # parsing library also supports passing multiple ports into this arg
-  # need to go back and add that functionality here 
+  # need to go back and add that functionality here
   def self.port(args_ary)
     if @@data_set
       puts "Checking for hosts with port #{args_ary[0]} open: "
@@ -146,12 +148,12 @@ module Parmap
     else
       print_help
     end
-    
+
   end
 
   # this is the loop that will handle the user input
   # going to use readline to handle this part
-  # that way we can easily add autocomplete and history  
+  # that way we can easily add autocomplete and history
   #  I'd like to have the shell prompt refelct the xml file or project file
   #  you are working with
   def self.ishell
@@ -161,11 +163,11 @@ module Parmap
     #  scan(gets.chomp)
     #end
 
-    list = Dir.entries("/usr/share/nmap/scripts")
-    comp = proc { |s| list.grep(/^#{Regexp.escape(s)}/) }
+    #list = Dir.entries("/usr/share/nmap/scripts")
+    #comp = proc { |s| list.grep(/^#{Regexp.escape(s)}/) }
 
     Readline.completion_append_character = " "
-    Readline.completion_proc = comp
+    #Readline.completion_proc = comp
 
     while input = Readline.readline("#{@@prompt_text}>> ", true)
       # Remove blank lines from history
@@ -173,11 +175,11 @@ module Parmap
       Readline::HISTORY.pop if input == ""
     end
   end
-  
+
 
 
 end
 
 
-  
+
 #Cli.shell

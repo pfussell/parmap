@@ -28,6 +28,9 @@ module Parmap
       return has_ports.uniq
     end
 
+
+
+
     # get an array of host objects that have a given
     # port open
     # because of the way ruby these objects you will
@@ -44,6 +47,19 @@ module Parmap
       has_port
     end
 
+    ## PROJECT
+    ## methods for dumping data to fsdb project folders
+    def all_hosts_ips
+      host_ary = []
+      @xmlfi.each_host { |host| host_ary << host.ip }
+      return host_ary
+    end
+
+    def build_host_data_ary
+      @xmlfi.each_host do |host|
+        host 
+      end
+    end
 
     # need a method for parsing NSE data
 
@@ -51,10 +67,21 @@ module Parmap
 
     # need a method for printing NSE output
 
+    def live_hosts_ary
+      hosts = []
+      if @xmlfi.scanner["arguments"].include?("-Pn")
+        parse_live_hosts.each {|host| hosts.push(host.ip.to_s)}
+      else
+        parse_up_hosts.each {|host| hosts.push(host.ip.to_s)}
+      end
+      return hosts
+    end
+
     # test scan type and print live hosts accordingly
     # if scan inlcudes a 'noping' rule we will only output
     # hosts with open ports (see 'parse_live_hosts')
     # TODO: out_type to select stdout or File for output
+
     def live_hosts_to_stdout(host_type = :ip)
       if host_type == :ip
         if @xmlfi.scanner["arguments"].include?("-Pn")
@@ -92,7 +119,7 @@ module Parmap
             parse_live_hosts.each { |host| f << "#{host.ip}\n" }
           end
         else
-          File.open("#{filename}", 'w') do |f|            
+          File.open("#{filename}", 'w') do |f|
             parse_up_hosts.each { |host| f << "#{host.ip}\n" }
           end
         end
@@ -122,7 +149,7 @@ module Parmap
         end
       end
     end
-    
+
     # print all hosts with given port
     # first arugment has to be :std OR :file depending on what you want to do
     # with the output

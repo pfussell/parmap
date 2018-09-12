@@ -2,7 +2,7 @@ require 'nmap/xml'
 require 'readline'
 require 'parmap/shell'
 require 'parmap/parser'
-require 'parmap/cli'
+require 'parmap/projects'
 
 module Parmap
   def version
