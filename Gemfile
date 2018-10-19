@@ -1,5 +1,5 @@
 source 'https://rubygems.org' do
   gem 'ruby-nmap'
-  gem 'readline'
+  gem 'fsdb'
   gem 'thor'
 end
